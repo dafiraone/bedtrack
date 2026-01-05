@@ -1,0 +1,255 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model appointment {
+  appoIntment_Id      Int       @id
+  patient_Id          Int?
+  doct_Id             Int?
+  reason              String?   @db.VarChar(100)
+  appointment_Date    DateTime? @db.Date
+  payment_amount      Int?
+  mode_of_payment     String?   @db.VarChar(100)
+  mode_of_appointment String?   @db.VarChar(100)
+  appointment_status  String?   @db.VarChar(100)
+  patients            patients? @relation(fields: [patient_Id], references: [patient_Id], onDelete: NoAction, onUpdate: NoAction, map: "appointment_ibfk_1")
+  doctor              doctor?   @relation(fields: [doct_Id], references: [doct_Id], onDelete: NoAction, onUpdate: NoAction, map: "appointment_ibfk_2")
+
+  @@index([doct_Id], map: "doct_Id")
+  @@index([patient_Id], map: "patient_Id")
+}
+
+model bed {
+  bed_No     Int          @id
+  ward_No    Int?
+  ward       ward?        @relation(fields: [ward_No], references: [ward_No], onDelete: NoAction, onUpdate: NoAction, map: "bed_ibfk_1")
+  bedrecords bedrecords[]
+
+  @@index([ward_No], map: "ward_No")
+}
+
+model bedrecords {
+  admission_Id    Int       @id
+  bed_No          Int?
+  patient_Id      Int?
+  nurse_Id        Int?
+  helper_Id       Int?
+  admission_Date  DateTime? @db.Date
+  discharge_Date  DateTime? @db.Date
+  amount          Int?
+  mode_of_payment String?   @db.VarChar(50)
+  bed             bed?      @relation(fields: [bed_No], references: [bed_No], onDelete: NoAction, onUpdate: NoAction, map: "bedrecords_ibfk_1")
+  patients        patients? @relation(fields: [patient_Id], references: [patient_Id], onDelete: NoAction, onUpdate: NoAction, map: "bedrecords_ibfk_2")
+  nurse           nurse?    @relation(fields: [nurse_Id], references: [nurse_Id], onDelete: NoAction, onUpdate: NoAction, map: "bedrecords_ibfk_3")
+  helpers         helpers?  @relation(fields: [helper_Id], references: [helper_Id], onDelete: NoAction, onUpdate: NoAction, map: "bedrecords_ibfk_4")
+
+  @@index([bed_No], map: "bed_No")
+  @@index([helper_Id], map: "helper_Id")
+  @@index([nurse_Id], map: "nurse_Id")
+  @@index([patient_Id], map: "patient_Id")
+}
+
+model department {
+  dept_Id   Int       @id
+  dept_Name String?   @db.VarChar(100)
+  doctor    doctor[]
+  helpers   helpers[]
+  nurse     nurse[]
+  room      room[]
+  ward      ward[]
+}
+
+model doctor {
+  doct_Id       Int             @id
+  dept_Id       Int?
+  FName         String?         @db.VarChar(100)
+  LName         String?         @db.VarChar(100)
+  Gender        String?         @db.Char(1)
+  contact_No    String?         @db.VarChar(100)
+  surgeon_Type  String?         @db.VarChar(100)
+  office_No     Int?
+  appointment   appointment[]
+  department    department?     @relation(fields: [dept_Id], references: [dept_Id], onDelete: NoAction, onUpdate: NoAction, map: "doctor_ibfk_1")
+  room          room?           @relation(fields: [office_No], references: [room_No], onDelete: NoAction, onUpdate: NoAction, map: "doctor_ibfk_2")
+  medicalrecord medicalrecord[]
+  staffshift    staffshift[]
+  surgeryrecord surgeryrecord[]
+
+  @@index([dept_Id], map: "dept_Id")
+  @@index([office_No], map: "office_No")
+}
+
+model helpers {
+  helper_Id     Int             @id
+  dept_Id       Int?
+  FName         String?         @db.VarChar(100)
+  LName         String?         @db.VarChar(100)
+  Gender        String?         @db.Char(1)
+  contact_No    String?         @db.VarChar(100)
+  bedrecords    bedrecords[]
+  department    department?     @relation(fields: [dept_Id], references: [dept_Id], onDelete: NoAction, onUpdate: NoAction, map: "helpers_ibfk_1")
+  roomrecords   roomrecords[]
+  staffshift    staffshift[]
+  surgeryrecord surgeryrecord[]
+
+  @@index([dept_Id], map: "dept_Id")
+}
+
+model medicalrecord {
+  record_Id           Int       @id
+  doct_Id             Int?
+  patient_Id          Int?
+  visit_Date          DateTime? @db.Date
+  curr_Weight         Decimal?  @db.Decimal(10, 2)
+  curr_height         Decimal?  @db.Decimal(10, 2)
+  curr_Blood_Pressure String?   @db.VarChar(100)
+  curr_Temp_F         Decimal?  @db.Decimal(10, 2)
+  diagnosis           String?   @db.VarChar(500)
+  treatment           String?   @db.VarChar(100)
+  next_Visit          DateTime? @db.Date
+  doctor              doctor?   @relation(fields: [doct_Id], references: [doct_Id], onDelete: NoAction, onUpdate: NoAction, map: "medicalrecord_ibfk_1")
+  patients            patients? @relation(fields: [patient_Id], references: [patient_Id], onDelete: NoAction, onUpdate: NoAction, map: "medicalrecord_ibfk_2")
+
+  @@index([doct_Id], map: "doct_Id")
+  @@index([patient_Id], map: "patient_Id")
+}
+
+model nurse {
+  nurse_Id      Int             @id
+  dept_Id       Int?
+  FName         String?         @db.VarChar(100)
+  LName         String?         @db.VarChar(100)
+  Gender        String?         @db.Char(1)
+  conatct_No    String?         @db.VarChar(100)
+  bedrecords    bedrecords[]
+  department    department?     @relation(fields: [dept_Id], references: [dept_Id], onDelete: NoAction, onUpdate: NoAction, map: "nurse_ibfk_1")
+  roomrecords   roomrecords[]
+  staffshift    staffshift[]
+  surgeryrecord surgeryrecord[]
+
+  @@index([dept_Id], map: "dept_Id")
+}
+
+model patients {
+  patient_Id    Int             @id
+  FName         String?         @db.VarChar(100)
+  LName         String?         @db.VarChar(100)
+  Gender        String?         @db.Char(1)
+  Date_Of_Birth DateTime?       @db.Date
+  contact_No    String?         @db.VarChar(100)
+  pt_Address    String?         @db.VarChar(100)
+  appointment   appointment[]
+  bedrecords    bedrecords[]
+  medicalrecord medicalrecord[]
+  roomrecords   roomrecords[]
+  surgeryrecord surgeryrecord[]
+}
+
+model room {
+  room_No       Int             @id
+  dept_Id       Int?
+  room_Type     String?         @db.VarChar(100)
+  doctor        doctor[]
+  department    department?     @relation(fields: [dept_Id], references: [dept_Id], onDelete: NoAction, onUpdate: NoAction, map: "room_ibfk_1")
+  roomrecords   roomrecords[]
+  surgeryrecord surgeryrecord[]
+
+  @@index([dept_Id], map: "dept_Id")
+}
+
+model roomrecords {
+  admisson_ID     Int       @id
+  room_no         Int?
+  patient_Id      Int?
+  nurse_Id        Int?
+  helper_Id       Int?
+  admission_Date  DateTime? @db.Date
+  discharge_Date  DateTime? @db.Date
+  amount          Int?
+  mode_of_payment String?   @db.VarChar(50)
+  room            room?     @relation(fields: [room_no], references: [room_No], onDelete: NoAction, onUpdate: NoAction, map: "roomrecords_ibfk_1")
+  patients        patients? @relation(fields: [patient_Id], references: [patient_Id], onDelete: NoAction, onUpdate: NoAction, map: "roomrecords_ibfk_2")
+  nurse           nurse?    @relation(fields: [nurse_Id], references: [nurse_Id], onDelete: NoAction, onUpdate: NoAction, map: "roomrecords_ibfk_3")
+  helpers         helpers?  @relation(fields: [helper_Id], references: [helper_Id], onDelete: NoAction, onUpdate: NoAction, map: "roomrecords_ibfk_4")
+
+  @@index([helper_Id], map: "helper_Id")
+  @@index([nurse_Id], map: "nurse_Id")
+  @@index([patient_Id], map: "patient_Id")
+  @@index([room_no], map: "room_no")
+}
+
+model staffshift {
+  shift_Id    Int       @id
+  doct_Id     Int?
+  nurse_Id    Int?
+  helper_Id   Int?
+  shift_Date  DateTime? @db.Date
+  shift_Start DateTime? @db.Time(0)
+  shift_End   DateTime? @db.Time(0)
+  doctor      doctor?   @relation(fields: [doct_Id], references: [doct_Id], onDelete: NoAction, onUpdate: NoAction, map: "staffshift_ibfk_1")
+  nurse       nurse?    @relation(fields: [nurse_Id], references: [nurse_Id], onDelete: NoAction, onUpdate: NoAction, map: "staffshift_ibfk_2")
+  helpers     helpers?  @relation(fields: [helper_Id], references: [helper_Id], onDelete: NoAction, onUpdate: NoAction, map: "staffshift_ibfk_3")
+
+  @@index([doct_Id], map: "doct_Id")
+  @@index([helper_Id], map: "helper_Id")
+  @@index([nurse_Id], map: "nurse_Id")
+}
+
+model surgeryrecord {
+  surgery_Id   Int       @id
+  patient_Id   Int?
+  surgeon_Id   Int?
+  surgery_Type String?   @db.VarChar(100)
+  surgery_Date DateTime? @db.Date
+  start_Time   DateTime? @db.Time(0)
+  end_Time     DateTime? @db.Time(0)
+  room_no      Int?
+  notes        String?   @db.VarChar(1000)
+  nurse_Id     Int?
+  helper_Id    Int?
+  patients     patients? @relation(fields: [patient_Id], references: [patient_Id], onDelete: NoAction, onUpdate: NoAction, map: "surgeryrecord_ibfk_1")
+  doctor       doctor?   @relation(fields: [surgeon_Id], references: [doct_Id], onDelete: NoAction, onUpdate: NoAction, map: "surgeryrecord_ibfk_2")
+  room         room?     @relation(fields: [room_no], references: [room_No], onDelete: NoAction, onUpdate: NoAction, map: "surgeryrecord_ibfk_3")
+  nurse        nurse?    @relation(fields: [nurse_Id], references: [nurse_Id], onDelete: NoAction, onUpdate: NoAction, map: "surgeryrecord_ibfk_4")
+  helpers      helpers?  @relation(fields: [helper_Id], references: [helper_Id], onDelete: NoAction, onUpdate: NoAction, map: "surgeryrecord_ibfk_5")
+
+  @@index([helper_Id], map: "helper_Id")
+  @@index([nurse_Id], map: "nurse_Id")
+  @@index([patient_Id], map: "patient_Id")
+  @@index([room_no], map: "room_no")
+  @@index([surgeon_Id], map: "surgeon_Id")
+}
+
+model ward {
+  ward_No    Int         @id
+  ward_Name  String?     @db.VarChar(100)
+  dept_Id    Int?
+  bed        bed[]
+  department department? @relation(fields: [dept_Id], references: [dept_Id], onDelete: NoAction, onUpdate: NoAction, map: "ward_ibfk_1")
+
+  @@index([dept_Id], map: "dept_Id")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  password  String
+  role      String   @default("admin")
+  createdAt DateTime @default(now())
+
+  @@map("users")
+}
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  action    String   // Contoh: "CREATE_USER", "DELETE_USER"
+  adminName String
+  details   String   @db.VarChar(1000)
+  createdAt DateTime @default(now())
+
+  @@map("audit_logs")
+}
