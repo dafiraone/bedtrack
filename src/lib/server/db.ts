@@ -305,3 +305,4 @@ export const getFullReportData = async () => {
             new Date(b.bedrecords[0].admission_Date).toLocaleDateString('id-ID') : '-'
     }));
 };
+

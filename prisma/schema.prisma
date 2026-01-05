@@ -28,6 +28,7 @@ model bed {
   ward_No    Int?
   ward       ward?        @relation(fields: [ward_No], references: [ward_No], onDelete: NoAction, onUpdate: NoAction, map: "bed_ibfk_1")
   bedrecords bedrecords[]
+  isActive  Boolean      @default(true)
 
   @@index([ward_No], map: "ward_No")
 }

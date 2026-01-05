@@ -69,7 +69,7 @@
                         Pasien dengan ID <span class="font-mono bg-gray-200 px-1">{data.patientId}</span> 
                         tidak sedang dirawat saat ini.
                     </p>
-                    <a href="/admin" class="block mt-8 text-blue-600 underline">Kembali ke Dashboard Admin</a>
+                    <a href="/" class="block mt-8 text-blue-600 underline">Kembali ke Dashboard</a>
                 </div>
             {/if}
         </div>

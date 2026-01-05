@@ -74,9 +74,6 @@
                         </button>
                     </div>
                     
-                    <p class="text-xs text-center text-gray-400 mt-6">
-                        Demo Account: User: <b>admin</b> | Pass: <b>admin</b>
-                    </p>
 
                 {:else}
                     <input type="hidden" name="role" value="patient">
@@ -94,9 +91,6 @@
                         </button>
                     </div>
 
-                    <p class="text-xs text-center text-gray-400 mt-6">
-                        Demo IDs: <b>100</b>, <b>101</b>, <b>1092</b> (Kamil Shah)
-                    </p>
                 {/if}
 
             </form>
